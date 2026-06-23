@@ -1,53 +1,51 @@
 name: Deploy to ECS
 
 on:
-push:
-branches:
-- main
+  push:
+    branches:
+      - main
 
 env:
-AWS_REGION: ap-south-1
-ECR_REPOSITORY: todo-api
-ECS_CLUSTER: todo-api-cluster
-ECS_SERVICE: todo-api-task-service-lh66xgm1
-ECR_REGISTRY: 579920977852.dkr.ecr.ap-south-1.amazonaws.com
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: todo-api
+  ECS_CLUSTER: todo-api-cluster
+  ECS_SERVICE: todo-api-task-service-lh66xgm1
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-```
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  - name: Configure AWS Credentials
-    uses: aws-actions/configure-aws-credentials@v4
-    with:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-  - name: Login to Amazon ECR
-    uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-  - name: Build Docker Image
-    run: |
-      docker build -t $ECR_REPOSITORY .
+      - name: Build Docker Image
+        run: |
+          docker build -t todo-api .
 
-  - name: Tag Docker Image
-    run: |
-      docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+      - name: Tag Image
+        run: |
+          docker tag todo-api:latest 579920977852.dkr.ecr.ap-south-1.amazonaws.com/todo-api:latest
 
-  - name: Push Docker Image
-    run: |
-      docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+      - name: Push Image
+        run: |
+          docker push 579920977852.dkr.ecr.ap-south-1.amazonaws.com/todo-api:latest
 
-  - name: Force ECS Deployment
-    run: |
-      aws ecs update-service \
-        --cluster $ECS_CLUSTER \
-        --service $ECS_SERVICE \
-        --force-new-deployment \
-        --region $AWS_REGION
-```
+      - name: Force ECS Deployment
+        run: |
+          aws ecs update-service \
+            --cluster todo-api-cluster \
+            --service todo-api-task-service-lh66xgm1 \
+            --force-new-deployment \
+            --region ap-south-1
