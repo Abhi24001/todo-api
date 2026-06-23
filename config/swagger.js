@@ -1,20 +1,22 @@
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Todo API",
-            version: "1.0.0",
-            description: "Todo API with JWT Authentication"
-        },
-        servers: [
-            {
-                url: "http://localhost:3000"
-            }
-        ]
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Todo API",
+      version: "1.0.0",
+      description: "Todo API with JWT Authentication"
     },
-    apis: []
+    servers: [
+      {
+        url: "http://todo-api-alb-1542586732.ap-south-1.elb.amazonaws.com"
+      }
+    ]
+  },
+  apis: [
+    "./routes/*.js"
+  ]
 };
 
 const swaggerSpec = swaggerJsdoc(options);
