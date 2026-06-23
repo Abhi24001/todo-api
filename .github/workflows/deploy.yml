@@ -9,7 +9,7 @@ env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: todo-api
   ECS_CLUSTER: todo-api-cluster
-  ECS_SERVICE: todo-api-service
+  ECS_SERVICE: todo-api-task-service-lh66xgm1
 
 jobs:
   deploy:
